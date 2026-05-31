@@ -43,8 +43,8 @@
     <!-- Universal/App Link: if the app is installed, the OS opens it before this
          page ever loads. This button is the explicit "open app" fallback. -->
     <a class="btn btn-primary" id="open-app" href="#">Open in Vervuvo</a>
-    <a class="btn btn-store" id="app-store" href="REPLACE_APP_STORE_URL">Download on the App Store</a>
-    <a class="btn btn-store" id="play-store" href="REPLACE_GOOGLE_PLAY_URL">Get it on Google Play</a>
+    <a class="btn btn-store" id="app-store" href="https://apps.apple.com/app/id6760433768">Download on the App Store</a>
+    <a class="btn btn-store" id="play-store" href="https://play.google.com/store/apps/details?id=com.vervuvo.app">Get it on Google Play</a>
 
     <p class="hint">After installing, reopen this link to accept the challenge.</p>
   </div>
@@ -54,8 +54,8 @@
     // Anon key is the public client key (already shipped in the app), safe to embed.
     // Fill these in to show the real duel title/category on the page. Optional —
     // the page works without them.
-    var SUPABASE_URL = "REPLACE_SUPABASE_URL";        // e.g. https://xxxx.supabase.co
-    var SUPABASE_ANON_KEY = "REPLACE_SUPABASE_ANON_KEY";
+    var SUPABASE_URL = "https://fdczpqjfjiwpiosxadob.supabase.co";
+    var SUPABASE_ANON_KEY = "sb_publishable_EZ8VOnww2KKEFXl3lD7lUw_zNHXlX8b";
 
     // Duel id is the last path segment: /duel/<id>
     var parts = location.pathname.split("/").filter(Boolean);
@@ -65,10 +65,25 @@
     // universal links don't fire (e.g. when navigated from another app's webview).
     document.getElementById("open-app").setAttribute("href", "vervuvo://duel/" + duelId);
 
-    // Best-effort fetch of public duel info to personalize the page.
+    // Hide any store button whose URL hasn't been filled in yet (e.g. the App
+    // Store listing before launch) so the page never shows a dead link.
+    ["app-store", "play-store"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && el.getAttribute("href").indexOf("REPLACE_") !== -1) el.style.display = "none";
+    });
+
+    // Best-effort fetch of public duel info to personalize the page. Uses the
+    // get_public_duel RPC (SECURITY DEFINER) which exposes only safe display
+    // fields to the anon key — the duels table itself is not anon-readable.
     if (SUPABASE_URL.indexOf("REPLACE_") === -1 && duelId) {
-      fetch(SUPABASE_URL + "/rest/v1/duels?id=eq." + encodeURIComponent(duelId) + "&select=title,category,subcategory,duration,status,link_invite", {
-        headers: { apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY }
+      fetch(SUPABASE_URL + "/rest/v1/rpc/get_public_duel", {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: "Bearer " + SUPABASE_ANON_KEY,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ p_duel_id: duelId })
       })
         .then(function (r) { return r.json(); })
         .then(function (rows) {
