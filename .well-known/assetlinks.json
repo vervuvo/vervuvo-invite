@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "com.vervuvo.app",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_ANDROID_SHA256_CERT_FINGERPRINT"
+        "CD:CD:A6:C3:AC:6B:13:AF:53:D7:6E:0F:33:A1:B7:83:97:DD:07:D7:74:C7:7A:E5:97:3F:B9:6D:3F:C6:43:C5",
+        "3D:BC:AC:F0:B7:70:43:57:B2:45:74:C4:F1:D0:3F:6B:34:20:FC:20:EF:7F:3B:E1:1C:98:5B:92:C9:3C:3D:F6"
       ]
     }
   }

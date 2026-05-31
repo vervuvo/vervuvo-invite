@@ -2,7 +2,7 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["REPLACE_APPLE_TEAM_ID.com.vervuvo.app"],
+        "appIDs": ["V6YAH3K23A.com.vervuvo.app"],
         "components": [
           {
             "/": "/duel/*",
