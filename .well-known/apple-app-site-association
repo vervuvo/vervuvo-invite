@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["REPLACE_APPLE_TEAM_ID.com.vervuvo.app"],
+        "components": [
+          {
+            "/": "/duel/*",
+            "comment": "Duel invite links open the Vervuvo app"
+          }
+        ]
+      }
+    ]
+  }
+}
