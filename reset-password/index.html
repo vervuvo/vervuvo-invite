@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Reset your password · Vervuvo</title>
+  <meta name="description" content="Set a new password for your Vervuvo account." />
+  <meta name="robots" content="noindex" />
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0e1216; color: #fff; padding: 24px;
+    }
+    .card {
+      width: 100%; max-width: 380px; text-align: center;
+      background: #161b22; border: 1px solid #232a33; border-radius: 20px; padding: 32px 24px;
+    }
+    .emoji { font-size: 52px; margin-bottom: 8px; }
+    h1 { font-size: 22px; margin: 0 0 8px; }
+    p { color: #9aa7b4; font-size: 15px; line-height: 1.5; margin: 0 0 24px; }
+    .btn {
+      display: block; width: 100%; padding: 15px; border-radius: 14px; font-size: 16px; font-weight: 700;
+      text-decoration: none; margin-bottom: 12px; border: none; cursor: pointer;
+    }
+    .btn-primary { background: #1f98cc; color: #fff; }
+    .btn-store { background: #232a33; color: #fff; border: 1px solid #2e3742; }
+    .hint { color: #5b6671; font-size: 12px; margin: 16px 0 0; }
+    .spinner {
+      width: 28px; height: 28px; margin: 0 auto 20px;
+      border: 3px solid #232a33; border-top-color: #1f98cc; border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="emoji" id="emoji">🔑</div>
+    <div class="spinner" id="spinner"></div>
+    <h1 id="title">Reset your password</h1>
+    <p id="subtitle">Opening Vervuvo so you can set a new password…</p>
+
+    <!-- If the app is installed, the OS may open it directly via the universal
+         link before this page loads. Otherwise the script below bounces to the
+         custom scheme, and this button is the explicit manual fallback. The
+         buttons start hidden and appear if the auto-bounce doesn't take. -->
+    <a class="btn btn-primary hidden" id="open-app" href="#">Open in Vervuvo</a>
+    <a class="btn btn-store hidden" id="app-store" href="https://apps.apple.com/app/id6760433768">Download on the App Store</a>
+    <a class="btn btn-store hidden" id="play-store" href="https://play.google.com/store/apps/details?id=com.vervuvo.app">Get it on Google Play</a>
+
+    <p class="hint hidden" id="hint">Don't have the app? Install it, then reopen this link.</p>
+  </div>
+
+  <script>
+    // Supabase 302-redirects here after verifying the reset token, carrying the
+    // recovery tokens (or an error) in the URL fragment: #access_token=...&type=recovery
+    var fragment = location.hash || "";
+    var deepLink = "vervuvo://reset-password" + fragment;
+
+    document.getElementById("open-app").setAttribute("href", deepLink);
+
+    function show(id) { document.getElementById(id).classList.remove("hidden"); }
+    function hide(id) { document.getElementById(id).classList.add("hidden"); }
+
+    // Reveal the manual buttons (Open in app + store links + hint).
+    function revealFallback() {
+      hide("spinner");
+      ["open-app", "app-store", "play-store", "hint"].forEach(show);
+    }
+
+    // Surface expired / already-used links instead of silently failing.
+    if (fragment.indexOf("error") !== -1) {
+      document.getElementById("emoji").textContent = "⚠️";
+      document.getElementById("title").textContent = "Link expired";
+      document.getElementById("subtitle").textContent =
+        "This reset link is invalid or has already been used. Request a new one from the app.";
+      revealFallback();
+    } else {
+      // Auto-bounce into the app (works when the universal link didn't fire,
+      // e.g. after a redirect or from an in-app browser).
+      window.location.href = deepLink;
+
+      // Browsers may silently block the scheme redirect (especially in-app
+      // webviews). If we're still here after a moment, surface the manual
+      // button so the user is never stuck on a spinner.
+      setTimeout(function () {
+        document.getElementById("subtitle").textContent =
+          "If Vervuvo didn't open automatically, tap below.";
+        revealFallback();
+      }, 1800);
+    }
+  </script>
+</body>
+</html>
